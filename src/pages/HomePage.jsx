@@ -1,16 +1,19 @@
-import React from 'react';
-import Footer from '../layouts/Footer';
-import Header from '../layouts/Header';
-import PageContent from '../layouts/PageContent';
+import BestSellers from "../components/HomeComponents/Bestsellers";
+import Blogs from "../components/HomeComponents/Blogs";
+import Collection from "../components/HomeComponents/Collection";
+import ContentCarousel from "../components/HomeComponents/ContentCarousel";
+import EditorsPick from "../components/HomeComponents/EditorsPick";
 
 function HomePage() {
     
   return (
     <div>
-        <Header />
-        Homepage
-        <PageContent />
-        <Footer />
+        <ContentCarousel />
+        <EditorsPick />
+        <BestSellers />
+        <ContentCarousel />
+        <Collection />
+        <Blogs />
     </div>
   );
 }
