@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useState } from 'react';
 
 // Slayt içeriklerimizi dinamik olarak tanımlıyoruz
 const SLIDES = [
@@ -16,7 +17,7 @@ const SLIDES = [
     title: 'Doğayla İç İçe Kamp Alanları',
     description: 'Hafta sonu kaçamağı için en popüler rotaları keşfedin.',
     buttonText: 'Rotaları İncele',
-    buttonLink: '/kamp'
+    buttonLink: '/shop'
   },
   {
     id: 3,
@@ -24,7 +25,7 @@ const SLIDES = [
     title: 'Geleceğin Teknolojileri',
     description: 'Akıllı ev sistemleri ve yapay zeka entegrasyonları şimdi stokta.',
     buttonText: 'Detaylı Bilgi',
-    buttonLink: '/teknoloji'
+    buttonLink: '/shop'
   }
 ];
 
@@ -67,12 +68,12 @@ export default function ContentCarousel() {
               <p className="text-gray-200 text-sm md:text-base mb-6 drop-shadow-sm">
                 {slide.description}
               </p>
-              <a 
-                href={slide.buttonLink}
+              <Link
+                to={slide.buttonLink}
                 className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded-lg transition-colors duration-200 shadow-md"
               >
                 {slide.buttonText}
-              </a>
+              </Link>
             </div>
           </div>
         ))}
