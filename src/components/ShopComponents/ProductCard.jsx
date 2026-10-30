@@ -1,7 +1,7 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 
-const ProductCard = ({ image, title, department, originalPrice, salePrice, colors }) => {
+const ProductCard = ({ product }) => {
+  const image = product.images?.[0]?.url;
   return (
     <Link to={`/productdetail/`} >
       <div className="flex flex-col group cursor-pointer bg-white">
@@ -9,7 +9,7 @@ const ProductCard = ({ image, title, department, originalPrice, salePrice, color
         <div className="relative aspect-[3/4] w-full overflow-hidden bg-slate-100">
           <img
             src={image}
-            alt={title}
+            alt={product.name}
             className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
           />
         </div>
@@ -17,32 +17,17 @@ const ProductCard = ({ image, title, department, originalPrice, salePrice, color
         {/* Ürün Bilgi Alanı */}
         <div className="flex flex-col items-center text-center pt-6 pb-4 px-2">
           <h4 className="text-base font-bold text-slate-900 tracking-tight">
-            {title}
+            {product.name}
           </h4>
           <p className="text-sm text-slate-500 font-semibold mt-1">
-            {department}
+            {product.description}
           </p>
           
           {/* Fiyat Alanı */}
           <div className="flex items-center gap-2 mt-2.5 font-bold">
-            <span className="text-slate-400 line-through text-sm">
-              ${originalPrice}
-            </span>
-            <span className="text-emerald-700 text-sm">
-              ${salePrice}
-            </span>
+            <p className="text-base font-bold text-[#23A6F0]">${Number(product.price).toFixed(2)}</p>
           </div>
 
-          {/* Renk Seçenekleri Çemberleri */}
-          <div className="flex items-center gap-1.5 mt-3">
-            {colors.map((color, index) => (
-              <span
-                key={index}
-                className="w-3 h-3 rounded-full border border-black/5"
-                style={{ backgroundColor: color }}
-              />
-            ))}
-          </div>
         </div>
       </div>
     </Link>

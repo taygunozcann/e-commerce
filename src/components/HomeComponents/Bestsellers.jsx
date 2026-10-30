@@ -1,18 +1,36 @@
-import React from 'react';
-import ProductCard from '../ShopComponents/ProductCard';
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { useParams } from "react-router-dom";
+import { fetchProducts } from "../../store/actions/productActions";
+import { useSelector } from "react-redux";
+import ProductCard from "../ShopComponents/ProductCard";
+import Spinner from "../ShopComponents/Spinner";
+import { FETCH_STATES } from "../../store/actions/productActions";
+import { useMemo } from "react";
 
 const Bestsellers = () => {
-  // Görseldeki ürünleri simüle eden örnek mock data dizisi
-  const products = [
-    { id: 1, image: 'https://cdn.beymen.com/mnresize/596/830/productimages/bcmwhsup.fi1_IMG_01_8684786225394.jpg', title: 'Graphic Design', department: 'English Department', originalPrice: '16.48', salePrice: '6.48', colors: ['#23A6F0', '#23D075', '#E77C40', '#252B42'] },
-    { id: 2, image: 'https://unsplash.com', title: 'Graphic Design', department: 'English Department', originalPrice: '16.48', salePrice: '6.48', colors: ['#23A6F0', '#23D075', '#E77C40', '#252B42'] },
-    { id: 3, image: 'https://unsplash.com', title: 'Graphic Design', department: 'English Department', originalPrice: '16.48', salePrice: '6.48', colors: ['#23A6F0', '#23D075', '#E77C40', '#252B42'] },
-    { id: 4, image: 'https://unsplash.com', title: 'Graphic Design', department: 'English Department', originalPrice: '16.48', salePrice: '6.48', colors: ['#23A6F0', '#23D075', '#E77C40', '#252B42'] },
-    { id: 5, image: 'https://unsplash.com', title: 'Graphic Design', department: 'English Department', originalPrice: '16.48', salePrice: '6.48', colors: ['#23A6F0', '#23D075', '#E77C40', '#252B42'] },
-    { id: 6, image: 'https://unsplash.com', title: 'Graphic Design', department: 'English Department', originalPrice: '16.48', salePrice: '6.48', colors: ['#23A6F0', '#23D075', '#E77C40', '#252B42'] },
-    { id: 7, image: 'https://unsplash.com', title: 'Graphic Design', department: 'English Department', originalPrice: '16.48', salePrice: '6.48', colors: ['#23A6F0', '#23D075', '#E77C40', '#252B42'] },
-    { id: 8, image: 'https://unsplash.com', title: 'Graphic Design', department: 'English Department', originalPrice: '16.48', salePrice: '6.48', colors: ['#23A6F0', '#23D075', '#E77C40', '#252B42'] },
-  ];
+  const dispatch = useDispatch();
+  // present on /shop/:gender/:categoryName/:categoryId, undefined on plain /shop
+ 
+
+  useEffect(() => {
+    dispatch(fetchProducts({limit:8, sort: "sell_count:desc"}));
+  }, [dispatch]);
+
+  const { productList, fetchState } = useSelector((state) => state.product);
+  
+  console.log("Bestsellers productList:", productList);
+
+  
+    if (fetchState === FETCH_STATES.NOT_FETCHED || fetchState === FETCH_STATES.FETCHING) {
+      return <Spinner label="Loading products..." />;
+    }
+    if (fetchState === FETCH_STATES.FAILED) {
+      return <p role="alert" className="py-20 text-center text-[#E74040]">Products could not be loaded. Please try again.</p>;
+    }
+    if (productList.length === 0) {
+      return <p className="py-20 text-center text-[#737373]">No products found.</p>;
+    }
 
   return (
     <section className="max-w-7xl mx-auto px-4 py-12 md:py-20 font-sans">
@@ -33,15 +51,10 @@ const Bestsellers = () => {
       {/* Ürünler Grid Listesi */}
       {/* Mobilde 1 veya isteğe göre 2 sütun (sm:grid-cols-2), masaüstünde 4 sütun */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12">
-        {products.map((product) => (
+        {productList.map((product) => (
           <ProductCard
             key={product.id}
-            image={product.image}
-            title={product.title}
-            department={product.department}
-            originalPrice={product.originalPrice}
-            salePrice={product.salePrice}
-            colors={product.colors}
+            product= {product}
           />
         ))}
       </div>

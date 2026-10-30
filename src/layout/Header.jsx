@@ -9,6 +9,9 @@ import {
   FaChevronDown,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import UserInfo from "../components/HeaderComponents/UserInfo";
+import CategoryDropdown from "../components/HeaderComponents/CategoryDropdown";
+import CategoryAccordion from "../components/HeaderComponents/CategoryAccordion";
 
 const navLinks = [
   { name: "Home", href: "/" },
@@ -57,25 +60,8 @@ function Header() {
 
               {/* SHOP DROPDOWN */}
               {link.dropdown && shopOpen && (
-                <div className="absolute left-0 top-full mt-4 w-40 rounded-md border border-gray-100 bg-white py-2 shadow-lg">
-                  <Link
-                    to="/shop"
-                    className="block px-4 py-2 text-sm text-[#737373] hover:bg-gray-50 hover:text-[#23a6f0]"
-                  >
-                    All Products
-                  </Link>
-                  <Link
-                    to="/shop/men"
-                    className="block px-4 py-2 text-sm text-[#737373] hover:bg-gray-50 hover:text-[#23a6f0]"
-                  >
-                    Men
-                  </Link>
-                  <Link
-                    to="/shop/women"
-                    className="block px-4 py-2 text-sm text-[#737373] hover:bg-gray-50 hover:text-[#23a6f0]"
-                  >
-                    Women
-                  </Link>
+                <div >
+                  <CategoryDropdown onNavigate={() => setShopOpen(!shopOpen)} />
                 </div>
               )}
             </div>
@@ -84,13 +70,9 @@ function Header() {
 
         {/* SAĞ İKONLAR */}
         <div className="hidden shrink-0 items-center gap-5 text-[#23a6f0] md:flex">
-          <Link
-            to="/signup"
-            className="flex items-center gap-1 text-sm font-semibold"
-          >
-            <FaRegUser size={13} />
-            <span>Login / Register</span>
-          </Link>
+
+          <UserInfo />
+
 
           <button aria-label="Ara" className="hover:text-[#168bd0]">
             <FaSearch size={16} />
@@ -144,24 +126,7 @@ function Header() {
 
                     {shopOpen && (
                       <div className="mt-3 flex flex-col items-center gap-3">
-                        <Link
-                          to="/shop"
-                          className="text-sm text-[#737373]"
-                        >
-                          All Products
-                        </Link>
-                        <Link
-                          to="/shop/men"
-                          className="text-sm text-[#737373]"
-                        >
-                          Men
-                        </Link>
-                        <Link
-                          to="/shop/women"
-                          className="text-sm text-[#737373]"
-                        >
-                          Women
-                        </Link>
+                        <CategoryAccordion onNavigate={() => setShopOpen(false)} />
                       </div>
                     )}
                   </>
@@ -176,13 +141,7 @@ function Header() {
               </div>
             ))}
 
-            <Link
-              to="/signup"
-              className="flex items-center gap-2 font-semibold text-[#23a6f0]"
-            >
-              <FaRegUser />
-              Login / Register
-            </Link>
+            <UserInfo />
 
             <div className="flex items-center gap-7 text-[#23a6f0]">
               <Link to="/search" aria-label="Ara">

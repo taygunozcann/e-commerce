@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom"; // react-router-dom v5; see README for v6
 import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
 import { api } from "../api/axiosInstance";
+import { fetchRolesIfNeeded } from "../store/actions/clientActions";
 
 const PASSWORD_RE = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -45,7 +47,8 @@ function Field({ label, hint, error, children }) {
 
 export default function SignupPage() {
   const history = useHistory();
-  const [roles, setRoles] = useState([]);
+  const dispatch = useDispatch();
+  const roles = useSelector((state) => state.client.roles);
   const [submitError, setSubmitError] = useState("");
 
   const {
@@ -53,21 +56,23 @@ export default function SignupPage() {
     formState: { errors, isSubmitting },
   } = useForm({ mode: "onChange" });
 
+  // Roles are fetched only if the store doesn't have them yet
   useEffect(() => {
-    api.get("/roles")
-      .then(({ data }) => {
-        setRoles(data);
-        const customer = data.find(isCustomerRole);
-        if (customer) setValue("role_id", String(customer.id)); // Customer by default
-      })
-      .catch(() => setSubmitError("Could not load roles. Please refresh the page."));
-  }, [setValue]);
+    dispatch(fetchRolesIfNeeded()).catch(() =>
+      setSubmitError("Could not load roles. Please refresh the page.")
+    );
+  }, [dispatch]);
+
+  // Customer is selected by default once roles are available
+  useEffect(() => {
+    const customer = roles.find(isCustomerRole);
+    if (customer) setValue("role_id", String(customer.id));
+  }, [roles, setValue]);
 
   const selectedRoleId = watch("role_id");
   const isStore = isStoreRole(roles.find((r) => String(r.id) === String(selectedRoleId)));
 
   const onSubmit = async (form) => {
-    toast.info("onSubmit çalıştı");  
     setSubmitError("");
     const payload = {
       name: form.name,
@@ -85,17 +90,19 @@ export default function SignupPage() {
     }
     try {
       await api.post("/signup", payload);
-      history.goBack();
       toast.warning("You need to click link in email to activate your account!", {
         toastId: "signup-activation", // prevents duplicates
         autoClose: 8000,
       });
+      // No previous page (e.g. /signup opened directly) -> go home instead
+      if (history.length > 1) history.goBack();
+      else history.push("/");
     } catch (err) {
       setSubmitError(err.response?.data?.message || err.response?.data?.error || "Signup failed. Please try again.");
     }
   };
 
-  return (  
+  return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="max-w-md mx-auto my-10 px-4 font-['Montserrat',sans-serif] text-[#252B42]">
       <h1 className="mb-6 text-2xl font-bold">Sign Up</h1>
 
@@ -121,7 +128,7 @@ export default function SignupPage() {
         })} />
       </Field>
 
-      <Field label="Role" error={errors.role_id} hint="Choose from the list.">
+      <Field label="Roles" error={errors.role_id} hint="Choose from the list.">
         <div className="relative">
           <select className={`${inputCls(errors.role_id)} appearance-none pr-11`} {...register("role_id", { required: "Select a role" })}>
             {roles.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
@@ -152,10 +159,10 @@ export default function SignupPage() {
             })} />
           </Field>
 
-          <Field label="Store bank account" error={errors.bank_account} hint="IBAN, starts with TR, 26 characters.">
+          <Field label="Store bank account" error={errors.bank_account} hint="Starts with TR followed by 24 digits.">
             <input className={inputCls(errors.bank_account)} placeholder="Store bank account (IBAN) *" {...register("bank_account", {
               required: "IBAN is required",
-              validate: (v) => isValidTrIban(v) || "Enter a valid IBAN",
+              validate: (v) => isValidTrIban(v) || "Enter a valid Turkish IBAN",
             })} />
           </Field>
         </>

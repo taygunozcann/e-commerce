@@ -1,14 +1,18 @@
-
+import { useMemo } from "react";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { getCategoryPath } from "../../utils/categoryLinks";
 
 function Categories() {
     // Üst Kategori Öne Çıkanları Data Dizisi
-   const categories = [
-    { id: 1, name: 'CLOTHS', items: '5 Items', image: 'https://unsplash.com' },
-    { id: 2, name: 'CLOTHS', items: '5 Items', image: 'https://unsplash.com' },
-    { id: 3, name: 'CLOTHS', items: '5 Items', image: 'https://unsplash.com' },
-    { id: 4, name: 'CLOTHS', items: '5 Items', image: 'https://unsplash.com' },
-    { id: 5, name: 'CLOTHS', items: '5 Items', image: 'https://unsplash.com' },
-  ];
+   const categories = useSelector((state) => state.product.categories);
+
+   const top5 = useMemo(
+    () => [...categories].sort((a, b) => Number(b.rating) - Number(a.rating)).slice(0, 5),
+    [categories]
+  );
+
+  if (top5.length === 0) return null;
     
   return (
     <div>
@@ -26,14 +30,14 @@ function Categories() {
       {/* Mobilde 1, Tablette 3, Masaüstünde 5 sütun yan yana listelenir */}
       <div className="max-w-7xl mx-auto px-6 pb-12">
         <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-          {categories.map((cat) => (
-            <div key={cat.id} className="relative h-[220px] overflow-hidden group cursor-pointer shadow-sm">
-              <img src={cat.image} alt={cat.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+          {top5.map((cat) => (
+            <Link key={cat.id} to={getCategoryPath(cat)} className="relative h-[220px] overflow-hidden group cursor-pointer shadow-sm">
+              <img src={cat.img} alt={cat.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
               <div className="absolute inset-0 bg-black/20 flex flex-col justify-center items-center text-white">
-                <span className="font-bold tracking-wider text-base">{cat.name}</span>
+                <span className="font-bold tracking-wider text-base">{cat.title}</span>
                 <span className="text-xs mt-1 font-medium">{cat.items}</span>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
